@@ -1,0 +1,40 @@
+﻿@using TXTextControl.Web.MVC.DocumentViewer
+
+<div style="width: 800px; height: 800px;">
+
+    @Html.TXTextControl().DocumentViewer(settings => {
+        settings.DocumentPath = "App_Data/nda.tx";
+        settings.Dock = DocumentViewerSettings.DockStyle.Fill;
+        settings.SignatureSettings = new SignatureSettings() {
+            RedirectUrlAfterSignature = this.Url.Action(
+                "HandleSignature", 
+                "Home", 
+                new { securityToken = "1234" }, 
+                Context.Request.Scheme, 
+                null),
+            ShowSignatureBar = true,
+            SignerName = "Tim Typer",
+            UniqueId = "1234-1234-1234-1234"
+        };
+    }).Render()
+
+</div>
+
+<script>
+
+    // attach the callback
+    window.addEventListener("documentViewerLoaded", function () {
+	    TXDocumentViewer.signatures.setSubmitCallback(handleSignedDocument);
+	});
+
+    function handleSignedDocument(data) {
+
+        var returnObject = JSON.parse(data);
+
+        if (returnObject.success === true)
+            alert("Thanks for signing!");
+        else
+            alert("Signing failed!");
+
+    }
+</script>
